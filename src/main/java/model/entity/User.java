@@ -1,11 +1,13 @@
 package model.entity;
 
 import javax.persistence.*;
+import javax.transaction.Transactional;
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
 @Table(name = "user")
-public class User {
+public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "iduser")
@@ -21,7 +23,7 @@ public class User {
 
     @OneToMany(mappedBy = "idUser")
     private List<Payment> payments;
-    @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+    @ManyToMany(mappedBy = "users")
     private List<Periodical> periodicals;
 
     public User() {
@@ -108,6 +110,7 @@ public class User {
         return this;
     }
 
+    @Transactional
     public List<Periodical> getPeriodicals() {
         return periodicals;
     }

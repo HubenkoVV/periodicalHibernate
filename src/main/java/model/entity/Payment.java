@@ -1,11 +1,12 @@
 package model.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
 @Table(name = "payment")
-public class Payment {
+public class Payment implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idpayment")
@@ -17,7 +18,12 @@ public class Payment {
     @JoinColumn(name = "iduser")
     private User idUser;
 
-    @ManyToMany(mappedBy = "payments", fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "periodical_has_payment",
+            joinColumns = { @JoinColumn(name = "idpayment") },
+            inverseJoinColumns = { @JoinColumn(name = "idperiodical") }
+    )
     private List<Periodical> periodicals;
 
     public Payment() {

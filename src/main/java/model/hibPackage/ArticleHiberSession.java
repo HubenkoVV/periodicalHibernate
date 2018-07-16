@@ -37,15 +37,17 @@ public class ArticleHiberSession{
     public List<Article> findByPeriodical(int idPeriodical) {
         try(Session session = getSessionFactory().openSession()){
             session.beginTransaction();
-            return session.createQuery("from Article article where article.idPeriodical = :periodical")
-                    .setParameter("periodical", idPeriodical).list();
+            return session.createQuery("SELECT i FROM Article i JOIN FETCH i.idPeriodical as periodical " +
+                    "where periodical.id = :periodicalID")
+                    .setParameter("periodicalID", idPeriodical).list();
         }
     }
 
     public List<Article> findByPeriodicalFixedNumberOfArticles(int id, int limit, int offset) {
         try(Session session = getSessionFactory().openSession()){
-            return session.createQuery("from Article article where article.idPeriodical = :periodical")
-                    .setParameter("periodical", id).setFirstResult(offset).setMaxResults(limit).list();
+            return session.createQuery("SELECT i FROM Article i JOIN FETCH i.idPeriodical as periodical " +
+                    "where periodical.id = :periodicalID")
+                    .setParameter("periodicalID", id).setFirstResult(offset).setMaxResults(limit).list();
         }
     }
 

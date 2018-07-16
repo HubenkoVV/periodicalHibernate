@@ -3,6 +3,7 @@ package controller.command;
 
 import model.entity.Periodical;
 import model.entity.User;
+import org.hibernate.Hibernate;
 import service.PeriodicalService;
 import service.UserService;
 import util.constant.Attributes;

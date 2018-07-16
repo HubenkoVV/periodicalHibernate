@@ -1,8 +1,12 @@
 package model.hibPackage;
 
 import model.entity.Payment;
+import model.entity.Periodical;
+import model.entity.User;
 import org.hibernate.Session;
 
+import javax.persistence.Query;
+import java.io.Serializable;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +22,23 @@ public class PaymentHiberSession{
         try(Session session = getSessionFactory().openSession()){
             session.beginTransaction();
             session.save(entity);
+
+            User user = session.get(User.class, entity.getIdUser().getId());
+            user.getPayments().add(entity);
+            for (Periodical p: entity.getPeriodicals()) {
+                session.createQuery("insert into periodical_has_payment" +
+                        " (:IDper, :IDpay)")
+                        .setParameter(1, p.getId())
+                        .setParameter(2, entity.getId())
+                        .executeUpdate();
+                p.getUsers().add(user);
+                user.getPeriodicals().add(p);
+                session.createQuery("insert into user_has_periodical" +
+                        " (:IDuser, :IDper)")
+                        .setParameter(2, p.getId())
+                        .setParameter(1, user.getId())
+                        .executeUpdate();
+            }
             return entity.getId();
         }
     }
@@ -39,7 +60,8 @@ public class PaymentHiberSession{
     public List<Payment> findByUser(int idUser) {
         try(Session session = getSessionFactory().openSession()){
             session.beginTransaction();
-            return session.createQuery("from Payment payment where payment.idUser = :IdUser")
+            return session.createQuery("SELECT i FROM Payment i JOIN FETCH i.idUser as user " +
+                    "where user.id = :IdUser")
                     .setParameter("IdUser", idUser).list();
         }
     }
@@ -47,8 +69,8 @@ public class PaymentHiberSession{
     public List<Payment> findByPeriodical(int idPeriodical) {
         try(Session session = getSessionFactory().openSession()){
             session.beginTransaction();
-            return session.createQuery("from Article article join article.periodicals p " +
-                    "where p.id = :idPeriodical").setParameter("idPeriodical", idPeriodical).list();
+            return session.createQuery("SELECT i FROM Payment i JOIN FETCH i.periodicals as periodical " +
+                    "where periodical.id = :periodicalID").setParameter("periodicalID", idPeriodical).list();
         }
     }
 

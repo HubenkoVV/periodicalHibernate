@@ -26,6 +26,8 @@ public class HibernateUtil {
         properties.put(AvailableSettings.USER, "root");
         properties.put(AvailableSettings.PASS, "");
         properties.put(AvailableSettings.DIALECT, MySQL5Dialect.class.getCanonicalName());
+        properties.put(AvailableSettings.SHOW_SQL, true);
+        properties.put(AvailableSettings.ENABLE_LAZY_LOAD_NO_TRANS, true);
 
         Configuration configuration = new Configuration()
                 .addProperties(properties)
