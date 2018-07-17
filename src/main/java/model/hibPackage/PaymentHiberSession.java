@@ -21,24 +21,16 @@ public class PaymentHiberSession{
     public int create(Payment entity) {
         try(Session session = getSessionFactory().openSession()){
             session.beginTransaction();
-            session.save(entity);
+            session.saveOrUpdate(entity);
 
             User user = session.get(User.class, entity.getIdUser().getId());
             user.getPayments().add(entity);
+
             for (Periodical p: entity.getPeriodicals()) {
-                session.createQuery("insert into periodical_has_payment" +
-                        " (:IDper, :IDpay)")
-                        .setParameter(1, p.getId())
-                        .setParameter(2, entity.getId())
-                        .executeUpdate();
                 p.getUsers().add(user);
-                user.getPeriodicals().add(p);
-                session.createQuery("insert into user_has_periodical" +
-                        " (:IDuser, :IDper)")
-                        .setParameter(2, p.getId())
-                        .setParameter(1, user.getId())
-                        .executeUpdate();
+                session.saveOrUpdate(p);
             }
+            session.getTransaction().commit();
             return entity.getId();
         }
     }
