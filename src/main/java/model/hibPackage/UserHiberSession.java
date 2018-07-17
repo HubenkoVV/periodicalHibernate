@@ -15,7 +15,6 @@ public class UserHiberSession{
 
     public User findByLogin(String login) {
         try(Session session = getSessionFactory().openSession()){
-            session.beginTransaction();
             return (User) session.createCriteria(User.class)
                     .add(Restrictions.eq("login", login)).uniqueResult();
         }
@@ -24,7 +23,8 @@ public class UserHiberSession{
     public void updateMoney(User user) {
         try(Session session = getSessionFactory().openSession()){
             session.beginTransaction();
-            session.saveOrUpdate(user);
+            session.update(user);
+            session.getTransaction().commit();
         }
     }
 

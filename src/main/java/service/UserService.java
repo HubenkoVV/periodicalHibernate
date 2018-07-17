@@ -38,6 +38,12 @@ public class UserService {
         }
     }
 
+    public User updateAccount(User user, int money) throws IncorrectDataException {
+        user.setMoney(user.getMoney() - money);
+        session.updateMoney(user);
+        return user;
+    }
+
     public User updateAccount(User user, String money) throws IncorrectDataException {
         if(!isDataCorrect(money, RegexForUser.MONEY))
             throw new IncorrectDataException(Exceptions.WRONG_MONEY);

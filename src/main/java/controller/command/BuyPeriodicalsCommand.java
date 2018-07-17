@@ -54,7 +54,7 @@ public class BuyPeriodicalsCommand implements Command {
                     .setPeriodicals(periodicals)
                     .setPrice(price[0]);
             payment = paymentService.createPayment(payment, user);
-            user.setMoney(user.getMoney() - payment.getPrice());
+            userService.updateAccount(user, payment.getPrice());
         } catch (IncorrectDataException | NotEnoughMoneyException e) {
             request.setAttribute(Attributes.EXCEPTION, LocalizeMessage.getException(e.getMessage()));
             logger.info("Buying periodicals was failed");
